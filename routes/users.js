@@ -4,11 +4,11 @@ const { getUsers, getUserId, createUser } = require("../controllers/users");
 
 // GetUser
 // GET /users — returns all users
-router.post("/", getUsers);
+router.get("/", getUsers);
 
 // UserId
 // GET /users/:userId - returns a user by _id
-router.post("/", getUserId);
+router.get("/", getUserId);
 
 // CreateUser
 // POST /users — creates a new user
