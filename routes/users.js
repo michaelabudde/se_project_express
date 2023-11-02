@@ -8,7 +8,7 @@ router.get("/", getUsers);
 
 // UserId
 // GET /users/:userId - returns a user by _id
-router.get("/", getUserId);
+router.get("/:userId", getUserId);
 
 // CreateUser
 // POST /users — creates a new user
