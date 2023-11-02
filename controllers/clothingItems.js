@@ -14,7 +14,6 @@ const createItem = (req, res) => {
     });
 };
 // was this implemented correctly?
-// can i just delete extra res?
 
 // module.exports.createClothingItem = (req) => {
 //   console.log(req.user._id); // _id will become accessible
@@ -61,12 +60,13 @@ const likeItem = (req, res) => {
   );
 };
 
-module.exports.dislikeItem = (req) =>
+const dislikeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } }, // remove _id from the array
     { new: true },
   );
+};
 
 module.exports = {
   createItem,
@@ -74,4 +74,5 @@ module.exports = {
   updateItem,
   deleteItem,
   likeItem,
+  dislikeItem,
 };
