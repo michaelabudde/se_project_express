@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 const app = express();
 const { PORT = 3001 } = process.env;
-
+app.use(express.json);
 mongoose.connect(
   "mongodb://127.0.0.1:27017/wtwr_db",
   (r) => {
@@ -22,7 +22,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json);
 app.use(routers);
 app.listen(PORT, () => {
   // if everything works fine, the console will show which port the application is listening to

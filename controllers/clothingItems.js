@@ -16,11 +16,12 @@ const createItem = (req, res) => {
 // was this implemented correctly?
 // can i just delete extra res?
 
-module.exports.createClothingItem = (req) => {
-  console.log(req.user._id); // _id will become accessible
-};
+// module.exports.createClothingItem = (req) => {
+//   console.log(req.user._id); // _id will become accessible
+// };
 
 const getItems = (req, res) => {
+  console.log("getLikes");
   ClothingItem.find({})
     .then((items) => res.status(200).send(items))
     .catch((e) => {
@@ -52,12 +53,13 @@ const deleteItem = (req, res) => {
     });
 };
 
-module.exports.likeItem = (req) =>
+const likeItem = (req, res) => {
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
     { new: true },
   );
+};
 
 module.exports.dislikeItem = (req) =>
   ClothingItem.findByIdAndUpdate(
@@ -71,4 +73,5 @@ module.exports = {
   getItems,
   updateItem,
   deleteItem,
+  likeItem,
 };
