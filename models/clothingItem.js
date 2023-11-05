@@ -30,12 +30,12 @@ const clothingItem = new mongoose.Schema(
     },
     // owner — a link to the item author's model of the ObjectId type, a required field
     owner: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: "URL cannot be empty",
     },
     // likes — a list of users who liked the item, an ObjectId array with a reference to the user modal (empty by default)
     likes: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
     },
     // createdAt — the item creation date, a field with the Date type and the default value Date.now
     createdAt: {

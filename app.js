@@ -17,7 +17,7 @@ const routers = require("./routes");
 
 app.use((req, res, next) => {
   req.user = {
-    _id: "6545d4647a6909cb4835fac9", // paste the _id of the test user created in the previous step
+    _id: "6545d4647a6909cb4835fac9",
   };
   next();
 });
