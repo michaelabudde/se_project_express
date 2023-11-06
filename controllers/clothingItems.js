@@ -46,7 +46,7 @@ const updateItem = (req, res) => {
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((e) => {
-      res.status(DEFAULT).send({ message: "Error from updateItems", e });
+      res.status(DEFAULT).send({ message: "Error from updateItem", e });
     });
 };
 
@@ -84,9 +84,13 @@ const deleteItem = (req, res) => {
 };
 
 const likeItem = (req, res) => {
+  const userId = req.user._id;
+  console.log("itemId:", req.params.itemId);
+  console.log("userId:", userId);
+
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: req.user._id } }, // add _id to the array if it's not there yet
+    { $addToSet: { likes: userId } },
     { new: true },
   )
     .orFail()

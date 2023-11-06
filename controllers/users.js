@@ -26,16 +26,20 @@ const getUsers = (req, res) => {
 
 // GET /users/:userId - returns a user by _id
 const getUserId = (req, res) => {
-  const { userId } = req.user; // Use req.user._id to retrieve the user's ID
+  const { userId } = req.params; // Use req.user._id to retrieve the user's ID
 
   user
     .findById(userId)
     .orFail()
+
     .then((userData) => {
       res.status(200).send({ data: userData });
     })
     .catch((e) => {
-      res.status(NOT_FOUND).send({ message: "User not found" }); // Change the status to 404 if the user is not found
+      if (e.name === "CastError") {
+        return res.status(BAD_REQUEST).send({ message: "Not a valid Id" });
+      }
+      return res.status(NOT_FOUND).send({ message: "User not found" }); // Change the status to 404 if the user is not found
     });
 };
 
