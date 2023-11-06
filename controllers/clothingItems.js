@@ -56,7 +56,7 @@ const deleteItem = (req, res) => {
   console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    // why is this saying not used?
+
     .then((item) => {
       if (!item.owner.equals(userId)) {
         return res
