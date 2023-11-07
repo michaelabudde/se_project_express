@@ -32,21 +32,9 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   console.log("getLikes");
   ClothingItem.find({})
-    .then((items) => res.status(200).send(items))
-    .catch((e) => {
-      res.status(DEFAULT).send({ message: "Error from getItems", e });
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-  console.log(itemId, imageUrl);
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.status(200).send({ data: item }))
-    .catch((e) => {
-      res.status(DEFAULT).send({ message: "Error from updateItem", e });
+    .then((items) => res.send({ items }))
+    .catch(() => {
+      res.status(DEFAULT).send({ message: "Error from getItems" });
     });
 };
 
@@ -140,7 +128,6 @@ const dislikeItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,

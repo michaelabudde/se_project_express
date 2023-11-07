@@ -4,22 +4,12 @@ const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
 // GET /users — returns all users
 const getUsers = (req, res) => {
   user
-    .find() // Fetch all users
+    .find()
     .then((users) => {
-      res.send({ data: users }); // Send the array of users in the response
+      res.send({ data: users }); // Always return 200 status for a list of users
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError" || err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (getUsers)" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Requested info is not found (getUsers)" });
-      }
       return res.status(DEFAULT).send({ message: "Server error (getUsers)" });
     });
 };
@@ -39,7 +29,10 @@ const getUserId = (req, res) => {
       if (e.name === "CastError") {
         return res.status(BAD_REQUEST).send({ message: "Not a valid Id" });
       }
-      return res.status(NOT_FOUND).send({ message: "User not found" }); // Change the status to 404 if the user is not found
+      if (e.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND).send({ message: "User not found" }); // Change the status to 404 if the user is not found
+      }
+      return res.status(DEFAULT).send({ message: "Server error (getUserId)" });
     });
 };
 
