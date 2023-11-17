@@ -52,7 +52,7 @@ const createUser = async (req, res) => {
     const { name, avatar, email, password } = req.body;
 
     // Check if a user with the same email already exists
-    const existingUser = await user.findOne({ email });
+    const existingUser = await user.findOne({ email }).select("+password"); // was this the right place to add this?
     if (existingUser) {
       return res.status(CONFLICT).send({ message: "Email already exists" });
     }

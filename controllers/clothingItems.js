@@ -41,31 +41,29 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const userId = req.user._id;
   const { itemId } = req.params;
-  console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
 
+  ClothingItem.findById(itemId)
     .then((item) => {
+      if (!item) {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+
       if (!item.owner.equals(userId)) {
         return res
           .status(FORBIDDEN)
-          .send({ message: "The item is owned by other user" });
+          .send({ message: "Unauthorized to delete this item" });
       }
+
       return item
         .deleteOne()
         .then(() => res.send({ message: "The item deleted" }));
     })
     .catch((err) => {
       console.error(err);
-      if (err.name === "ValidationError" || err.name === "CastError") {
+      if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
           .send({ message: "Invalid request (deleteItem)" });
-      }
-      if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Requested info is not found (deleteItem)" });
       }
       return res.status(DEFAULT).send({ message: "Server error (deleteItem)" });
     });
