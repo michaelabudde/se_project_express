@@ -79,10 +79,9 @@ const createUser = async (req, res) => {
         .status(BAD_REQUEST)
         .send({ message: "Invalid request (createUser)" });
     }
-
-    // Handle other errors
-    return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   }
+  // Handle other errors
+  return res.status(DEFAULT).send({ message: "Server error (createUser)" });
 };
 
 const login = (req, res) => {
