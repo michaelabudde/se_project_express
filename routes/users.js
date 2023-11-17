@@ -1,17 +1,11 @@
 const router = require("express").Router();
-const { getUsers, getUserId, createUser } = require("../controllers/users");
-// CRUD
+const authMiddleware = require("../middlewares/auth");
+const { getCurrentUser } = require("../controllers/users");
 
-// GetUser
-// GET /users — returns all users
-router.get("/", getUsers);
+// Apply the authMiddleware to protect the route
+router.use(authMiddleware);
 
-// UserId
-// GET /users/:userId - returns a user by _id
-router.get("/:userId", getUserId);
-
-// CreateUser
-// POST /users — creates a new user
-router.post("/", createUser);
+// Route to get the logged-in user data
+router.get("/me", getCurrentUser);
 
 module.exports = router;

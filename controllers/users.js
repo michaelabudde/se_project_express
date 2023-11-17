@@ -109,5 +109,23 @@ const login = (req, res) => {
       res.status(401).send({ message: err.message });
     });
 };
+const getCurrentUser = async (req, res) => {
+  try {
+    // The user data is available in req.user due to the authMiddleware
+    const userId = req.user._id;
 
-module.exports = { getUsers, getUserId, createUser, login };
+    // Fetch user data based on the _id value
+
+    if (!userId) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Return the user data
+    res.status(200).send({ data: userId });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error (getCurrentUser)" });
+  }
+  return res.status(CREATED).send({ message: "Everything Worked" });
+};
+module.exports = { getUsers, getUserId, createUser, login, getCurrentUser };
