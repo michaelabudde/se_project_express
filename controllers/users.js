@@ -128,4 +128,44 @@ const getCurrentUser = async (req, res) => {
   }
   return res.status(CREATED).send({ message: "Everything Worked" });
 };
-module.exports = { getUsers, getUserId, createUser, login, getCurrentUser };
+const updateUserProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const updates = req.body;
+
+    // Update the user profile
+    const updateUser = await user.findByIdAndUpdate(userId, updates, {
+      new: true, // Return the updated document
+      runValidators: true, // Run model validation on the updated data
+    });
+
+    if (!updateUser) {
+      return res.status(404).send({ message: "User not found" });
+    }
+
+    // Return the updated user data
+    res.status(200).send({ data: user });
+  } catch (error) {
+    console.error(error);
+
+    // Handle validation errors
+    if (error.name === "ValidationError") {
+      return res
+        .status(400)
+        .send({ message: "Validation error (updateUserProfile)" });
+    }
+
+    // Handle server errors
+    res.status(500).send({ message: "Server error (updateUserProfile)" });
+  }
+  return res.status(CREATED).send({ message: "Everything Worked" });
+};
+
+module.exports = {
+  getUsers,
+  getUserId,
+  createUser,
+  login,
+  getCurrentUser,
+  updateUserProfile,
+};

@@ -20,13 +20,6 @@ const routers = require("./routes");
 app.post("/signin", login);
 app.post("/signup", createUser);
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "6545d4647a6909cb4835fac9",
-  };
-  next();
-});
-
 // Mount the user routes
 app.use("/users", userRoutes);
 
