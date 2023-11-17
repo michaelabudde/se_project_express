@@ -4,6 +4,7 @@ const FORBIDDEN = 403;
 const NOT_FOUND = 404;
 const CONFLICT = 409;
 const DEFAULT = 500;
+const CREATED = 201;
 
 module.exports = {
   BAD_REQUEST,
@@ -12,4 +13,5 @@ module.exports = {
   NOT_FOUND,
   CONFLICT,
   DEFAULT,
+  CREATED,
 };

@@ -1,5 +1,15 @@
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { JWT_SECRET } = require("../utils/config"); // Adjust the path based on your project structure
+
 const user = require("../models/user");
-const { BAD_REQUEST, NOT_FOUND, DEFAULT } = require("../utils/errors");
+const {
+  BAD_REQUEST,
+  NOT_FOUND,
+  DEFAULT,
+  CONFLICT,
+  CREATED,
+} = require("../utils/errors");
 
 // GET /users — returns all users
 const getUsers = (req, res) => {
@@ -37,25 +47,67 @@ const getUserId = (req, res) => {
 };
 
 // POST /users — creates a new user
-const createUser = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-  const { name, avatar } = req.body;
-  user
-    .create({ name, avatar })
-    .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+const createUser = async (req, res) => {
+  try {
+    const { name, avatar, email, password } = req.body;
+
+    // Check if a user with the same email already exists
+    const existingUser = await user.findOne({ email });
+    if (existingUser) {
+      return res.status(CONFLICT).send({ message: "Email already exists" });
+    }
+
+    // Hash the password before saving to the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user with hashed password
+    const newUser = await user.create({
+      name,
+      avatar,
+      email,
+      password: hashedPassword,
+    });
+
+    res.status(CREATED).send({ data: newUser });
+  } catch (err) {
+    console.error(err);
+
+    // Handle MongoDB duplicate error (11000 error code)
+    if (err.code === 11000) {
+      return res.status(CONFLICT).send({ message: "Email already exists" });
+    }
+
+    // Handle other validation errors
+    if (err.name === "ValidationError") {
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "Invalid request (createUser)" });
+    }
+
+    // Handle other errors
+    res.status(DEFAULT).send({ message: "Server error (createUser)" });
+  }
+  return res.status(CREATED).send({ message: "Everything Worked" });
+};
+
+const login = (req, res) => {
+  const { email, password } = req.body;
+
+  return user
+    .findUserByCredentials(email, password)
+    .then(() => {
+      // Authentication successful! Create a JWT
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+
+      // Send the token to the client in the response body
+      res.status(200).send({ token });
     })
     .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (createUser)" });
-      }
-      return res.status(DEFAULT).send({ message: "Server error (createUser)" });
+      // Authentication error
+      res.status(401).send({ message: err.message });
     });
 };
 
-module.exports = { getUsers, getUserId, createUser };
+module.exports = { getUsers, getUserId, createUser, login };
