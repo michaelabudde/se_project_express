@@ -52,7 +52,8 @@ const createUser = async (req, res) => {
     const { name, avatar, email, password } = req.body;
 
     // Check if a user with the same email already exists
-    const existingUser = await user.findOne({ email }).select("+password"); // was this the right place to add this?
+    const existingUser = await user.findOne({ email }).select("+password");
+
     if (existingUser) {
       return res.status(CONFLICT).send({ message: "Email already exists" });
     }
@@ -72,11 +73,6 @@ const createUser = async (req, res) => {
   } catch (err) {
     console.error(err);
 
-    // Handle MongoDB duplicate error (11000 error code)
-    if (err.code === 11000) {
-      return res.status(CONFLICT).send({ message: "Email already exists" });
-    }
-
     // Handle other validation errors
     if (err.name === "ValidationError") {
       return res
@@ -85,9 +81,8 @@ const createUser = async (req, res) => {
     }
 
     // Handle other errors
-    res.status(DEFAULT).send({ message: "Server error (createUser)" });
+    return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   }
-  return res.status(CREATED).send({ message: "Everything Worked" });
 };
 
 const login = (req, res) => {
