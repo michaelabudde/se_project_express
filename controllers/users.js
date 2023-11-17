@@ -50,7 +50,9 @@ const getUserId = (req, res) => {
 const createUser = async (req, res) => {
   try {
     const { name, avatar, email, password } = req.body;
-
+    if (!email || !password) {
+      return res.status(BAD_REQUEST).send({ message: "bad request" });
+    }
     // Check if a user with the same email already exists
     const existingUser = await user.findOne({ email }).select("+password");
 
@@ -62,14 +64,21 @@ const createUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create a new user with hashed password
-    const newUser = await user.create({
+
+    await user.create({
       name,
       avatar,
       email,
       password: hashedPassword,
     });
 
-    res.status(CREATED).send({ data: newUser });
+    const responseUser = {
+      name,
+      avatar,
+      email,
+    };
+
+    return res.status(CREATED).send({ data: responseUser });
   } catch (err) {
     console.error(err);
 
@@ -79,16 +88,16 @@ const createUser = async (req, res) => {
         .status(BAD_REQUEST)
         .send({ message: "Invalid request (createUser)" });
     }
+    return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   }
   // Handle other errors
-  return res.status(DEFAULT).send({ message: "Server error (createUser)" });
 };
 
 const login = (req, res) => {
-  const { email, password } = req.body;
+  const { email, hashedPassword } = req.body;
 
   return user
-    .findUserByCredentials(email, password)
+    .findUserByCredentials(email, hashedPassword)
     .then(() => {
       // Authentication successful! Create a JWT
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
