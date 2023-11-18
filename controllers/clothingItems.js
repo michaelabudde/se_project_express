@@ -39,6 +39,7 @@ const getItems = (req, res) => {
 };
 
 const deleteItem = (req, res) => {
+  console.log(req.user);
   const userId = req.user._id;
   const { itemId } = req.params;
 
