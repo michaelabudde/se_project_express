@@ -15,10 +15,10 @@ mongoose.connect(
   },
   (e) => console.log("DB error", e),
 );
-
+app.use(cors());
 const routers = require("./routes");
 
-app.use(cors());
+
 app.post("/signin", login);
 app.post("/signup", createUser);
 
