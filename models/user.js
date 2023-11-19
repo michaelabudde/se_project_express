@@ -36,29 +36,26 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.findUserByCredentials = (req, res) => {
-  const { email, password } = req.body;
-  const User = userSchema; // added this in to define "User" ?
-
-  User.findOne({ email })
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password,
+) {
+  console.log(email, password);
+  return this.findOne({ email })
+    .select("+password")
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error("Incorrect email or password"));
       }
 
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        // the hashes didn't match, rejecting the promise
-        return Promise.reject(new Error("Incorrect email or password"));
-      }
+      return bcrypt.compare(password, user.password).then((matched) => {
+        if (!matched) {
+          // the hashes didn't match, rejecting the promise
+          return Promise.reject(new Error("Incorrect email or password"));
+        }
 
-      // authentication successful
-      return res.send({ message: "Everything good!" }); // added return to satisfy error ?
-    })
-    .catch((err) => {
-      res.status(401).send({ message: err.message });
+        return user;
+      });
     });
 };
 module.exports = mongoose.model("user", userSchema);
