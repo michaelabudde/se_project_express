@@ -93,9 +93,11 @@ const createUser = async (req, res) => {
   // Handle other errors
 };
 
-const login = (req, res) =>
+const login = (req, res) => {
+  console.log(req.body);
+  const { body } = req;
   user
-    .findUserByCredentials(req, res)
+    .findUserByCredentials(body.email, body.password)
     .then(() => {
       // Authentication successful! Create a JWT
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
@@ -107,8 +109,9 @@ const login = (req, res) =>
     })
     .catch((err) => {
       // Authentication error
-      res.status(401).send({ message: err.message });
+      res.status(400).send({ message: err.message });
     });
+};
 const getCurrentUser = async (req, res) => {
   try {
     // The user data is available in req.user due to the authMiddleware
