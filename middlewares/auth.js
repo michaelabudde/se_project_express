@@ -21,8 +21,7 @@ const authMiddleware = (req, res, next) => {
     // Add the token payload to the user object
     req.user = payload;
 
-    next(); // Call next to move to the next middleware or route handler
-    return undefined;
+    return next(); // Call next to move to the next middleware or route handler
   } catch (error) {
     // If there's an issue with the token (e.g., expired or invalid), return a 401 error
     return res
