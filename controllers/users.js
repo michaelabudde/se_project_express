@@ -124,12 +124,13 @@ const getCurrentUser = async (req, res) => {
     }
 
     // Return the user data
-    return res.status(200).send({ data: userId });
+    return res.status(200).json({ data: "test" });
   } catch (error) {
     console.error(error);
     return res.status(500).send({ message: "Server error (getCurrentUser)" });
   }
 };
+
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -146,7 +147,7 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Return the updated user data
-    res.status(200).send({ data: user });
+    return res.status(200).send({ data: user });
   } catch (error) {
     console.error(error);
 
@@ -158,9 +159,11 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Handle server errors
-    res.status(500).send({ message: "Server error (updateUserProfile)" });
+    return res
+      .status(500)
+      .send({ message: "Server error (updateUserProfile)" });
   }
-  return res.status(CREATED).send({ message: "Everything Worked" });
+  /* return res.status(CREATED).send({ message: "Everything Worked" }); */
 };
 
 module.exports = {
