@@ -22,12 +22,11 @@ const authMiddleware = (req, res, next) => {
     req.user = payload;
 
     // Call next to move to the next middleware or route handler
-    next();
+    return res.status(CREATED).send({ message: "Everything Worked" });
   } catch (error) {
     // If there's an issue with the token (e.g., expired or invalid), return a 401 error
     return res.status(401).send({ message: "Unauthorized" });
   }
-  return res.status(CREATED).send({ message: "Everything Worked" });
 };
 
 module.exports = authMiddleware;

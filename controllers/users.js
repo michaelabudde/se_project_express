@@ -124,12 +124,11 @@ const getCurrentUser = async (req, res) => {
     }
 
     // Return the user data
-    res.status(200).send({ data: userId });
+    return res.status(200).send({ data: userId });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Server error (getCurrentUser)" });
+    return res.status(500).send({ message: "Server error (getCurrentUser)" });
   }
-  return res.status(CREATED).send({ message: "Everything Worked" });
 };
 const updateUserProfile = async (req, res) => {
   try {

@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const { login, createUser } = require("./controllers/users");
 const userRoutes = require("./routes/users");
 
+const authMiddleware = require("./middlewares/auth");
+
 const app = express();
 const { PORT = 3001 } = process.env;
 app.use(express.json());
@@ -18,9 +20,9 @@ mongoose.connect(
 app.use(cors());
 const routers = require("./routes");
 
-
 app.post("/signin", login);
 app.post("/signup", createUser);
+app.use(authMiddleware);
 
 // Mount the user routes
 app.use("/users", userRoutes);
