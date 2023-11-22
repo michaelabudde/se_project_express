@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config"); // Adjust the path based on your project structure
 
-const user = require("../models/user");
+const User = require("../models/user");
 const {
   BAD_REQUEST,
   NOT_FOUND,
@@ -13,8 +13,7 @@ const {
 
 // GET /users — returns all users
 const getUsers = (req, res) => {
-  user
-    .find()
+  User.find()
     .then((users) => {
       res.send({ data: users }); // Always return 200 status for a list of users
     })
@@ -28,8 +27,7 @@ const getUsers = (req, res) => {
 const getUserId = (req, res) => {
   const { userId } = req.params; // Use req.user._id to retrieve the user's ID
 
-  user
-    .findById(userId)
+  User.findById(userId)
     .orFail()
 
     .then((userData) => {
@@ -54,7 +52,7 @@ const createUser = async (req, res) => {
       return res.status(BAD_REQUEST).send({ message: "bad request" });
     }
     // Check if a user with the same email already exists
-    const existingUser = await user.findOne({ email }).select("+password");
+    const existingUser = await User.findOne({ email }).select("+password");
 
     if (existingUser) {
       return res.status(CONFLICT).send({ message: "Email already exists" });
@@ -65,7 +63,7 @@ const createUser = async (req, res) => {
 
     // Create a new user with hashed password
 
-    await user.create({
+    await User.create({
       name,
       avatar,
       email,
@@ -96,9 +94,8 @@ const createUser = async (req, res) => {
 const login = (req, res) => {
   console.log(req.body);
   const { body } = req;
-  user
-    .findUserByCredentials(body.email, body.password)
-    .then(() => {
+  User.findUserByCredentials(body.email, body.password)
+    .then((user) => {
       // Authentication successful! Create a JWT
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
@@ -137,7 +134,7 @@ const updateUserProfile = async (req, res) => {
     const updates = req.body;
 
     // Update the user profile
-    const updateUser = await user.findByIdAndUpdate(userId, updates, {
+    const updateUser = await User.findByIdAndUpdate(userId, updates, {
       new: true, // Return the updated document
       runValidators: true, // Run model validation on the updated data
     });
@@ -147,7 +144,7 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Return the updated user data
-    return res.status(200).send({ data: user });
+    return res.status(200).send({ data: User });
   } catch (error) {
     console.error(error);
 
