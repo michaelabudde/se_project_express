@@ -145,7 +145,7 @@ const updateUserProfile = async (req, res) => {
     }
 
     // Return the updated user data
-    return res.status(200).send({ data: User });
+    return res.status(200).send({ data: updateUser });
   } catch (error) {
     console.error(error);
 
