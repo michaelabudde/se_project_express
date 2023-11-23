@@ -5,6 +5,7 @@ const NOT_FOUND = 404;
 const CONFLICT = 409;
 const DEFAULT = 500;
 const CREATED = 201;
+const SUCCESS = 200;
 
 module.exports = {
   BAD_REQUEST,
@@ -14,4 +15,5 @@ module.exports = {
   CONFLICT,
   DEFAULT,
   CREATED,
+  SUCCESS,
 };

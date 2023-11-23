@@ -11,6 +11,5 @@ router.use((req, res) => {
   res.status(NOT_FOUND).send({
     message: "Requested resource not found",
   });
-  /* res.status(DEFAULT).send({ message: "Router not found" }); */
 });
 module.exports = router;

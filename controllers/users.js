@@ -9,6 +9,7 @@ const {
   DEFAULT,
   CONFLICT,
   CREATED,
+  SUCCESS,
 } = require("../utils/errors");
 
 // GET /users — returns all users
@@ -31,7 +32,7 @@ const getUserId = (req, res) => {
     .orFail()
 
     .then((userData) => {
-      res.status(200).send({ data: userData });
+      res.status(SUCCESS).send({ data: userData });
     })
     .catch((e) => {
       if (e.name === "CastError") {
@@ -102,11 +103,11 @@ const login = (req, res) => {
       });
 
       // Send the token to the client in the response body
-      res.status(200).send({ token });
+      res.status(SUCCESS).send({ token });
     })
     .catch((err) => {
       // Authentication error
-      res.status(400).send({ message: err.message });
+      res.status(BAD_REQUEST).send({ message: err.message });
     });
 };
 
@@ -118,14 +119,16 @@ const getCurrentUser = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!userId) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(NOT_FOUND).send({ message: "User not found" });
     }
 
     // Return the user data
-    return res.status(200).send({ data: user });
+    return res.status(SUCCESS).send({ data: user });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "Server error (getCurrentUser)" });
+    return res
+      .status(DEFAULT)
+      .send({ message: "Server error (getCurrentUser)" });
   }
 };
 
@@ -141,27 +144,26 @@ const updateUserProfile = async (req, res) => {
     });
 
     if (!updateUser) {
-      return res.status(404).send({ message: "User not found" });
+      return res.status(NOT_FOUND).send({ message: "User not found" });
     }
 
     // Return the updated user data
-    return res.status(200).send({ data: updateUser });
+    return res.status(SUCCESS).send({ data: updateUser });
   } catch (error) {
     console.error(error);
 
     // Handle validation errors
     if (error.name === "ValidationError") {
       return res
-        .status(400)
+        .status(BAD_REQUEST)
         .send({ message: "Validation error (updateUserProfile)" });
     }
 
     // Handle server errors
     return res
-      .status(500)
+      .status(DEFAULT)
       .send({ message: "Server error (updateUserProfile)" });
   }
-  /* return res.status(CREATED).send({ message: "Everything Worked" }); */
 };
 
 module.exports = {
