@@ -8,7 +8,7 @@ const authMiddleware = (req, res, next) => {
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // If the token is not provided or doesn't start with 'Bearer ', return a 401 error
-    return res.status(UNAUTHORIZED).json({ error: "Unauthorized" });
+    return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
   }
 
   // Extract the token from the Authorization header
@@ -24,12 +24,8 @@ const authMiddleware = (req, res, next) => {
     return next(); // Call next to move to the next middleware or route handler
   } catch (error) {
     // If there's an issue with the token (e.g., expired or invalid), return a 401 error
-    return res
-      .status(UNAUTHORIZED)
-      .json({ error: "Unauthorized", message: error.message });
+    return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
   }
 };
-
-module.exports = authMiddleware;
 
 module.exports = authMiddleware;

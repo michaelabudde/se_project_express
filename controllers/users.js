@@ -6,44 +6,12 @@ const User = require("../models/user");
 const {
   BAD_REQUEST,
   NOT_FOUND,
+  UNAUTHORIZED,
   DEFAULT,
   CONFLICT,
   CREATED,
   SUCCESS,
 } = require("../utils/errors");
-
-// GET /users — returns all users
-const getUsers = (req, res) => {
-  User.find()
-    .then((users) => {
-      res.send({ data: users }); // Always return 200 status for a list of users
-    })
-    .catch((err) => {
-      console.error(err);
-      return res.status(DEFAULT).send({ message: "Server error (getUsers)" });
-    });
-};
-
-// GET /users/:userId - returns a user by _id
-const getUserId = (req, res) => {
-  const { userId } = req.params; // Use req.user._id to retrieve the user's ID
-
-  User.findById(userId)
-    .orFail()
-
-    .then((userData) => {
-      res.status(SUCCESS).send({ data: userData });
-    })
-    .catch((e) => {
-      if (e.name === "CastError") {
-        return res.status(BAD_REQUEST).send({ message: "Not a valid Id" });
-      }
-      if (e.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND).send({ message: "User not found" }); // Change the status to 404 if the user is not found
-      }
-      return res.status(DEFAULT).send({ message: "Server error (getUserId)" });
-    });
-};
 
 // POST /users — creates a new user
 const createUser = async (req, res) => {
@@ -103,11 +71,14 @@ const login = (req, res) => {
       });
 
       // Send the token to the client in the response body
-      res.status(SUCCESS).send({ token });
+      res.send({ token });
     })
     .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res.status(UNAUTHORIZED);
+      }
       // Authentication error
-      res.status(BAD_REQUEST).send({ message: err.message });
+      return res.status(DEFAULT).send({ message: err.message });
     });
 };
 
@@ -135,7 +106,12 @@ const getCurrentUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const updates = req.body;
+    const { name, avatar } = req.body; // Destructure only the name and avatar fields
+
+    // Create an object with only the specified fields to update
+    const updates = {};
+    if (name) updates.name = name;
+    if (avatar) updates.avatar = avatar;
 
     // Update the user profile
     const updateUser = await User.findByIdAndUpdate(userId, updates, {
@@ -167,8 +143,6 @@ const updateUserProfile = async (req, res) => {
 };
 
 module.exports = {
-  getUsers,
-  getUserId,
   createUser,
   login,
   getCurrentUser,
