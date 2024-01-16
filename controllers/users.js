@@ -78,7 +78,9 @@ const login = (req, res) => {
         return res.status(UNAUTHORIZED).send({ message: "unauthorized login" });
       }
       // Authentication error
-      return res.status(DEFAULT).send({ message: "authentification error" });
+      return res
+        .status(BAD_REQUEST)
+        .send({ message: "authentification error" });
     });
 };
 
