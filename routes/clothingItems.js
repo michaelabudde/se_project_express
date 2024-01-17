@@ -8,8 +8,6 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItems");
 
-// CRUD
-
 // Create
 router.post("/", authMiddleware, createItem);
 

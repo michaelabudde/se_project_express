@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config"); // Adjust the path based on your project structure
-
+const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 const {
   BAD_REQUEST,
