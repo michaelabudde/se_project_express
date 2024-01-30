@@ -6,7 +6,7 @@ const {
   deleteItem,
   likeItem,
   dislikeItem,
-} = require("../controllers/clothingItems");
+} = require("../controllers/clothingItem");
 
 // Create
 router.post("/", authMiddleware, createItem);

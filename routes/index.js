@@ -1,11 +1,11 @@
 const router = require("express").Router();
 const { NOT_FOUND } = require("../utils/errors");
 
-const itemRouter = require("./clothingItems");
-const userRouter = require("./users");
+const itemRouter = require("./clothingItem");
+const userRouter = require("./user");
 
 router.use("/items", itemRouter);
-router.use("/users", userRouter);
+router.use("/user", userRouter);
 
 router.use((req, res) => {
   res.status(NOT_FOUND).send({
