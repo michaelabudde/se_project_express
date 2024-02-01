@@ -22,12 +22,6 @@ app.post("/login", login);
 app.post("/signup", createUser);
 app.use(routes);
 
-/* app.post("/signin", login, (req, res) => {
-  // Example: Sign a JWT token
-  const token = jwt.sign({ userId: 32 }, JWT_SECRET, { expiresIn: "7h" });
-  res.json({ token });
-}); */
-
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);
 });
