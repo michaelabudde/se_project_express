@@ -9,17 +9,12 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
-  console.log(req.user._id);
-  const { name, weather, imageUrl, likes } = req.body;
-  ClothingItem.create({ name, weather, imageUrl, likes, owner: req.user._id })
+  const { name, weather, imageUrl } = req.body; // removed likes
+  ClothingItem.create({ name, weather, imageUrl }) // removed likes
     .then((item) => {
-      console.log(item);
       res.status(201).send({ data: item });
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST)
@@ -30,7 +25,6 @@ const createItem = (req, res) => {
 };
 
 const getItems = (req, res) => {
-  console.log("getLikes");
   ClothingItem.find({})
     .then((items) => res.send({ items }))
     .catch(() => {

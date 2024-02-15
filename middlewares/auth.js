@@ -14,18 +14,18 @@ const authMiddleware = (req, res, next) => {
   // Extract the token from the Authorization header
   const token = authorization.replace("Bearer ", "");
 
-  try {
-    // Verify the token (removed 'await' here)
-    const payload = jwt.verify(token, JWT_SECRET);
+  // Verify the token
+  const payload = jwt.verify(token, JWT_SECRET);
 
-    // Add the token payload to the user object
-    req.user = payload;
-
-    return next(); // Call next to move to the next middleware or route handler
-  } catch (error) {
+  if (!payload) {
     // If there's an issue with the token (e.g., expired or invalid), return a 401 error
     return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
   }
+
+  // Add the token payload to the user object
+  req.user = payload;
+
+  return next(); // Call next to move to the next middleware or route handler
 };
 
 module.exports = authMiddleware;
