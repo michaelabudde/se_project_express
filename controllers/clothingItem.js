@@ -9,16 +9,20 @@ const {
 } = require("../utils/errors");
 
 const createItem = (req, res) => {
+  console.log(req.user);
   const { name, weather, imageUrl } = req.body; // removed likes
-  ClothingItem.create({ name, weather, imageUrl }) // removed likes
+  ClothingItem.create({
+    name,
+    weather,
+    imageUrl,
+    owner: req.user._id,
+  }) // removed likes
     .then((item) => {
       res.status(201).send({ data: item });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (createItem)" });
+        return res.status(BAD_REQUEST).send({ message: err.message });
       }
       return res.status(DEFAULT).send({ message: "Server error (createItem)" });
     });
