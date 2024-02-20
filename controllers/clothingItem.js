@@ -70,9 +70,6 @@ const deleteItem = (req, res) => {
 
 const likeItem = (req, res) => {
   const userId = req.user._id;
-  console.log("itemId:", req.params.itemId);
-  console.log("userId:", userId);
-
   ClothingItem.findByIdAndUpdate(
     req.params.itemId,
     { $addToSet: { likes: userId } },
@@ -81,6 +78,8 @@ const likeItem = (req, res) => {
     .orFail()
     .then((item) => res.send({ data: item }))
     .catch((err) => {
+      console.log("itemId:", req.params.itemId);
+      console.log("userId:", userId);
       console.error(err);
       if (err.name === "ValidationError" || err.name === "CastError") {
         return res
