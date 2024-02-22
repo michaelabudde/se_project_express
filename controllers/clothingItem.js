@@ -37,28 +37,23 @@ const getItems = (req, res) => {
 };
 
 const deleteItem = (req, res) => {
-  console.log(req.user);
   const userId = req.user._id;
   const { itemId } = req.params;
-
   ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
         return res.status(NOT_FOUND).send({ message: "Item not found" });
       }
-
       if (!item.owner.equals(userId)) {
         return res
           .status(FORBIDDEN)
           .send({ message: "Unauthorized to delete this item" });
       }
-
       return item
         .deleteOne()
         .then(() => res.send({ message: "The item deleted" }));
     })
     .catch((err) => {
-      console.error(err);
       if (err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
@@ -70,17 +65,15 @@ const deleteItem = (req, res) => {
 
 const likeItem = (req, res) => {
   const userId = req.user._id;
+  const { itemId } = req.params; // added const instead of req.params.itemId
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
+    itemId,
     { $addToSet: { likes: userId } },
     { new: true },
   )
     .orFail()
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      console.log("itemId:", req.params.itemId);
-      console.log("userId:", userId);
-      console.error(err);
       if (err.name === "ValidationError" || err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
@@ -96,15 +89,16 @@ const likeItem = (req, res) => {
 };
 
 const dislikeItem = (req, res) => {
+  const userId = req.user._id;
+  const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $pull: { likes: req.user._id } }, // remove _id from the array
+    itemId,
+    { $pull: { likes: userId } }, // remove _id from the array
     { new: true },
   )
     .orFail()
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      console.error(err);
       if (err.name === "ValidationError" || err.name === "CastError") {
         return res
           .status(BAD_REQUEST)
