@@ -25,12 +25,10 @@ const createUser = async (req, res) => {
     if (existingUser) {
       return res.status(CONFLICT).send({ message: "Email already exists" });
     }
-
     // Hash the password before saving to the database
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create a new user with hashed password
-
     await User.create({
       name,
       avatar,
@@ -52,7 +50,7 @@ const createUser = async (req, res) => {
     if (err.name === "ValidationError") {
       return res
         .status(BAD_REQUEST)
-        .send({ message: "Invalid request (createUser)" });
+        .send({ message: "Unable to create user." });
     }
     return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   }
@@ -74,7 +72,9 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        return res.status(UNAUTHORIZED).send({ message: "unauthorized login" });
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Incorrect email or password" });
       }
       // Authentication error
       return res
