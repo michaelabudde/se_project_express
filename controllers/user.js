@@ -58,7 +58,6 @@ const createUser = async (req, res) => {
 };
 
 const login = (req, res) => {
-  console.log(req.body);
   const { body } = req;
   User.findUserByCredentials(body.email, body.password)
     .then((user) => {
@@ -107,7 +106,8 @@ const getCurrentUser = async (req, res) => {
 const updateUserProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { name, avatar, email } = req.body; // Destructure only the name and avatar fields
+    const { name, avatar, email } = req.body;
+    // Destructure only the name and avatar fields
 
     // Create an object with only the specified fields to update
     const updates = {};

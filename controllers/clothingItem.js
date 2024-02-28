@@ -5,28 +5,8 @@ const {
   NOT_FOUND,
   DEFAULT,
   FORBIDDEN,
-  // errorHandler,
 } = require("../utils/errors");
 
-// const createItem = (req, res) => {
-//   const { name, weather, imageUrl } = req.body; // removed likes
-
-//   ClothingItem.create({
-//     name,
-//     weather,
-//     imageUrl,
-//     owner: req.user._id,
-//   }) // removed likes
-//     .then((item) => {
-//       res.status(201).send({ data: item });
-//     })
-//     .catch((err) => {
-//       if (err.name === "ValidationError") {
-//         return res.status(BAD_REQUEST).send({ message: err.message });
-//       }
-//       return res.status(DEFAULT).send({ message: "Server error (createItem)" });
-//     });
-// };
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   let errorMessage = null;
@@ -93,7 +73,7 @@ const deleteItem = (req, res) => {
 
 const likeItem = (req, res) => {
   const userId = req.user._id;
-  const { itemId } = req.params; // added const instead of req.params.itemId
+  const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: userId } },
@@ -121,7 +101,7 @@ const dislikeItem = (req, res) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: userId } }, // remove _id from the array
+    { $pull: { likes: userId } }, 
     { new: true },
   )
     .orFail()

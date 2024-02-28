@@ -9,7 +9,7 @@ const clothingItem = new mongoose.Schema(
       maxlength: 30,
       required: true,
     },
-    // weather — a required string that describes the weather type. Make sure it matches the weather type you defined in your React app ('hot', 'warm', and'cold'). Use the enum validator to implement the field.
+    // weather — a required string that describes the weather type.
     weather: {
       type: String,
       required: true,

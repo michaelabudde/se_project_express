@@ -1,7 +1,6 @@
 require("dotenv").config();
 
-const { PORT = 3001 } = process.env; // define JWT?
-/* const jwt = require("jsonwebtoken"); */
+const { PORT = 3001 } = process.env;
 const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
