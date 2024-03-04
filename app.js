@@ -1,3 +1,4 @@
+/* eslint no-console: ["error", { allow: ["warn", "error"] }] */
 require("dotenv").config();
 
 const { PORT = 3001 } = process.env;
@@ -23,4 +24,3 @@ app.use(routes);
 app.listen(PORT, () => {
   console.error(`App listening at port ${PORT}`);
 });
-// why does it not like the use of console statements here?
