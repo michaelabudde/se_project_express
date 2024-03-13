@@ -1,4 +1,5 @@
 /* eslint no-console: ["error", { allow: ["warn", "error"] }] */
+
 require("dotenv").config();
 
 const { PORT = 3001 } = process.env;

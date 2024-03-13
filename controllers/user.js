@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
+const BadRequest = require("../errors/bad-request");
 const {
   BAD_REQUEST,
   NOT_FOUND,
@@ -21,13 +22,11 @@ const createUser = async (req, res) => {
     }
     // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email }).select("+password");
-
     if (existingUser) {
       return res.status(CONFLICT).send({ message: "Email already exists" });
     }
     // Hash the password before saving to the database
     const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create a new user with hashed password
     await User.create({
       name,
@@ -35,25 +34,26 @@ const createUser = async (req, res) => {
       email,
       password: hashedPassword,
     });
-
     const responseUser = {
       name,
       avatar,
       email,
     };
-
     return res.status(CREATED).send({ data: responseUser });
   } catch (err) {
     console.error(err);
 
     // Handle other validation errors
     if (err.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "Unable to create user." });
+      // return res
+      //   .status(BAD_REQUEST)
+      //   .send({ message: "Unable to create user." });
+      next(new BadRequest("user could not be created"));
+    } else {
+      next(err);
     }
-    return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   }
+  // return res.status(DEFAULT).send({ message: "Server error (createUser)" });
   // Handle other errors
 };
 
