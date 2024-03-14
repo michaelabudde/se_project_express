@@ -1,13 +1,15 @@
 const ClothingItem = require("../models/clothingItem");
-
+const BadRequest = require("../errors/bad-request");
+const NotFound = require("../errors/not-found");
+const Forbidden = require("../errors/not-found");
 const {
-  BAD_REQUEST,
-  NOT_FOUND,
+  // BAD_REQUEST,
+  // NOT_FOUND,
   DEFAULT,
-  FORBIDDEN,
+  // FORBIDDEN,
 } = require("../utils/errors");
 
-const createItem = (req, res) => {
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   let errorMessage = null;
 
@@ -16,7 +18,8 @@ const createItem = (req, res) => {
   }
 
   if (errorMessage) {
-    return res.status(BAD_REQUEST).send({ message: errorMessage });
+    // return res.status(BAD_REQUEST).send({ message: errorMessage });
+    next(new BadRequest());
   }
 
   return ClothingItem.create({
@@ -30,7 +33,10 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST).send({ message: err.message });
+        // return res.status(BAD_REQUEST).send({ message: err.message });
+        next(new BadRequest());
+      } else {
+        next(err);
       }
       return res.status(DEFAULT).send({ message: "Server error (createItem)" });
     });
@@ -44,18 +50,20 @@ const getItems = (req, res) => {
     });
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
   ClothingItem.findById(itemId)
     .then((item) => {
       if (!item) {
-        return res.status(NOT_FOUND).send({ message: "Item not found" });
+        // return res.status(NOT_FOUND).send({ message: "Item not found" });
+        next(new NotFound());
       }
       if (!item.owner.equals(userId)) {
-        return res
-          .status(FORBIDDEN)
-          .send({ message: "Unauthorized to delete this item" });
+        // return res
+        //   .status(FORBIDDEN)
+        //   .send({ message: "Unauthorized to delete this item" });
+        next(new Forbidden());
       }
       return item
         .deleteOne()
@@ -63,15 +71,18 @@ const deleteItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (deleteItem)" });
+        // return res
+        //   .status(BAD_REQUEST)
+        //   .send({ message: "Invalid request (deleteItem)" });
+        next(new BadRequest());
+      } else {
+        next(err);
       }
       return res.status(DEFAULT).send({ message: "Server error (deleteItem)" });
     });
 };
 
-const likeItem = (req, res) => {
+const likeItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
@@ -83,20 +94,18 @@ const likeItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError" || err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (likeItem)" });
+        next(new BadRequest());
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Requested info is not found (likeItem)" });
+        next(new NotFound());
+      } else {
+        next(err);
       }
       return res.status(DEFAULT).send({ message: "Server error (likeItem)" });
     });
 };
 
-const dislikeItem = (req, res) => {
+const dislikeItem = (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
   ClothingItem.findByIdAndUpdate(
@@ -108,14 +117,18 @@ const dislikeItem = (req, res) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError" || err.name === "CastError") {
-        return res
-          .status(BAD_REQUEST)
-          .send({ message: "Invalid request (dislikeItem)" });
+        // return res
+        //   .status(BAD_REQUEST)
+        //   .send({ message: "Invalid request (dislikeItem)" });
+        next(new BadRequest());
       }
       if (err.name === "DocumentNotFoundError") {
-        return res
-          .status(NOT_FOUND)
-          .send({ message: "Requested info is not found (dislikeItem)" });
+        // return res
+        //   .status(NOT_FOUND)
+        //   .send({ message: "Requested info is not found (dislikeItem)" });
+        next(new NotFound());
+      } else {
+        next(err);
       }
       return res
         .status(DEFAULT)

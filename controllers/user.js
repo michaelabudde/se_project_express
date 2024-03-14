@@ -3,27 +3,32 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
 const User = require("../models/user");
 const BadRequest = require("../errors/bad-request");
+const Unauthorized = require("../errors/unauthorized");
+const Conflict = require("../errors/conflict");
+const NotFound = require("../errors/not-found");
 const {
-  BAD_REQUEST,
-  NOT_FOUND,
-  UNAUTHORIZED,
+  // BAD_REQUEST,
+  // NOT_FOUND,
+  // UNAUTHORIZED,
   DEFAULT,
-  CONFLICT,
+  // CONFLICT,
   CREATED,
   SUCCESS,
 } = require("../utils/errors");
 
 // POST /users — creates a new user
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   try {
     const { name, avatar, email, password } = req.body;
     if (!email || !password) {
-      return res.status(BAD_REQUEST).send({ message: "bad request" });
+      // return res.status(BAD_REQUEST).send({ message: "bad request" });
+      next(new BadRequest());
     }
     // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email }).select("+password");
     if (existingUser) {
-      return res.status(CONFLICT).send({ message: "Email already exists" });
+      // return res.status(CONFLICT).send({ message: "Email already exists" });
+      next(new Conflict());
     }
     // Hash the password before saving to the database
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -53,11 +58,10 @@ const createUser = async (req, res) => {
       next(err);
     }
   }
-  // return res.status(DEFAULT).send({ message: "Server error (createUser)" });
-  // Handle other errors
+  return res.status(DEFAULT).send({ message: "Server error (createUser)" });
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { body } = req;
   User.findUserByCredentials(body.email, body.password)
     .then((user) => {
@@ -71,18 +75,20 @@ const login = (req, res) => {
     })
     .catch((err) => {
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Incorrect email or password" });
+        // return res
+        //   .status(UNAUTHORIZED)
+        //   .send({ message: "Incorrect email or password" });
+        next(new Unauthorized());
       }
       // Authentication error
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "authentification error" });
+      // return res
+      //   .status(BAD_REQUEST)
+      //   .send({ message: "authentification error" });
+      next(new BadRequest());
     });
 };
 
-const getCurrentUser = async (req, res) => {
+const getCurrentUser = async (req, res, next) => {
   try {
     // The user data is available in req.user due to the authMiddleware
     const userId = req.user._id;
@@ -90,7 +96,8 @@ const getCurrentUser = async (req, res) => {
     const user = await User.findById(userId);
 
     if (!userId) {
-      return res.status(NOT_FOUND).send({ message: "User not found" });
+      // return res.status(NOT_FOUND).send({ message: "User not found" });
+      next(new NotFound());
     }
 
     // Return the user data
@@ -103,7 +110,7 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
-const updateUserProfile = async (req, res) => {
+const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user._id;
     const { name, avatar, email } = req.body;
@@ -121,7 +128,8 @@ const updateUserProfile = async (req, res) => {
     });
 
     if (!updateUser) {
-      return res.status(NOT_FOUND).send({ message: "User not found" });
+      // return res.status(NOT_FOUND).send({ message: "User not found" });
+      next(new NotFound());
     }
 
     // Return the updated user data
@@ -131,9 +139,10 @@ const updateUserProfile = async (req, res) => {
 
     // Handle validation errors
     if (error.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST)
-        .send({ message: "Validation error (updateUserProfile)" });
+      // return res
+      //   .status(BAD_REQUEST)
+      //   .send({ message: "Validation error (updateUserProfile)" });
+      next(new BadRequest());
     }
 
     // Handle server errors
