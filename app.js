@@ -2,6 +2,8 @@
 
 require("dotenv").config();
 
+const { errors } = require("celebrate");
+
 const { PORT = 3001 } = process.env;
 const cors = require("cors");
 const express = require("express");
@@ -23,6 +25,7 @@ app.post("/login", login);
 app.post("/signup", createUser);
 app.use(routes);
 app.use(errorHandler);
+app.use(errors()); // celebrate error handler
 
 app.listen(PORT, () => {
   console.error(`App listening at port ${PORT}`);
