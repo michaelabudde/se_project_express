@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const routes = require("./routes");
 const { login, createUser } = require("./controllers/user");
 const errorHandler = require("./middlewares/error-handler");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 
@@ -18,13 +19,16 @@ mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => console.error("Database connected"))
   .catch((err) => console.error("Error connecting to database:", err));
-app.use(express.json());
-app.use(cors({ origin: "http://localhost:3000" }));
 
+app.use(express.json());
+
+app.use(cors({ origin: "http://localhost:3000" }));
+app.use(requestLogger);
 app.post("/login", login);
 app.post("/signup", createUser);
 app.use(routes);
-app.use(errorHandler);
+app.use(errorLogger); // enabling the error logger
+app.use(errorHandler); // centralized error handler
 app.use(errors()); // celebrate error handler
 
 app.listen(PORT, () => {

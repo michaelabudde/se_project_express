@@ -75,7 +75,7 @@ module.exports.validateLogIn = celebrate({
 // 4. User and clothing item IDs when they are accessed
 
 // IDs must be a hexadecimal value length of 24 characters.
-module.exports.validateIDs = celebrate({
+module.exports.validateIds = celebrate({
   params: Joi.object().keys({
     userID: Joi.string().hex().length(24).required().messages({
       "string.hex": "User ID must be a hexadecimal value",
