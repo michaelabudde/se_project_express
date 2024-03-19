@@ -21,9 +21,10 @@ mongoose
   .then(() => console.error("Database connected"))
   .catch((err) => console.error("Error connecting to database:", err));
 
+app.use(cors({ origin: "http://localhost:3000" }));
+
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:3000" }));
 app.use(requestLogger);
 app.get("/crash-test", () => {
   setTimeout(() => {
