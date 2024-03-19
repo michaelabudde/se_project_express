@@ -8,7 +8,6 @@ const {
   DEFAULT,
   // FORBIDDEN,
 } = require("../utils/errors");
-
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   let errorMessage = null;
