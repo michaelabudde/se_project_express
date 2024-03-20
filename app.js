@@ -12,7 +12,6 @@ const routes = require("./routes");
 const { login, createUser } = require("./controllers/user");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-const { validateUserInfo, validateLogIn } = require("./middlewares/validation");
 
 const app = express();
 
@@ -31,8 +30,8 @@ app.get("/crash-test", () => {
     throw new Error("Server will crash now");
   }, 0);
 });
-app.post("/login", validateLogIn, login);
-app.post("/signup", validateUserInfo, createUser);
+// app.post("/login", validateLogIn, login);
+// app.post("/signup", validateUserInfo, createUser);
 app.use(routes);
 app.use(errorLogger); // enabling the error logger
 app.use(errorHandler); // centralized error handler

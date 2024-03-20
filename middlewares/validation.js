@@ -28,10 +28,6 @@ module.exports.validateCardBody = celebrate({
 });
 // 2. The user info body when a user is created
 
-// The user name is a string of between 2 and 30 characters.
-// The user avatar is a required string in a URL format.
-// Email is a required string in a valid email format.
-// Password is a required string.
 module.exports.validateUserInfo = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30).messages({
@@ -56,9 +52,6 @@ module.exports.validateUserInfo = celebrate({
   }),
 });
 // 3. Authentication when a user logs in
-
-// Email is a required string in a valid email format.
-// Password is a required string.
 module.exports.validateLogIn = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email().messages({
