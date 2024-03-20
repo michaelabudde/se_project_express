@@ -33,8 +33,10 @@ app.get("/crash-test", () => {
 // app.post("/signup", validateUserInfo, createUser);
 app.use(routes);
 app.use(errorLogger); // enabling the error logger
-app.use(errorHandler); // centralized error handler
+
 app.use(errors()); // celebrate error handler
+
+app.use(errorHandler); // centralized error handler
 
 app.listen(PORT, () => {
   console.error(`App listening at port ${PORT}`);

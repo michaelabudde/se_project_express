@@ -2,12 +2,6 @@ const ClothingItem = require("../models/clothingItem");
 const BadRequest = require("../errors/bad-request");
 const NotFound = require("../errors/not-found");
 const Forbidden = require("../errors/not-found");
-const {
-  // BAD_REQUEST,
-  // NOT_FOUND,
-  DEFAULT,
-  // FORBIDDEN,
-} = require("../utils/errors");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
@@ -19,7 +13,7 @@ const createItem = (req, res, next) => {
 
   if (errorMessage) {
     // return res.status(BAD_REQUEST).send({ message: errorMessage });
-    next(new BadRequest());
+    next(new BadRequest("bad request"));
   }
 
   return ClothingItem.create({
@@ -34,20 +28,40 @@ const createItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         // return res.status(BAD_REQUEST).send({ message: err.message });
-        next(new BadRequest());
+        next(new BadRequest("bad request"));
       } else {
         next(err);
       }
-      return res.status(DEFAULT).send({ message: "Server error (createItem)" });
     });
 };
 
-const getItems = (req, res) => {
-  ClothingItem.find({})
-    .then((items) => res.send({ items }))
-    .catch(() => {
-      res.status(DEFAULT).send({ message: "Error from getItems" });
-    });
+// const getItems = (req, res) => {
+//   if (ClothingItem.find({})){
+//     .then((items) => res.send({ items }))
+//     .catch(() => {});} else {
+//       next(err);
+//     }
+// };
+// const getItems = (req, res, next) => {
+//   ClothingItem.find({})
+//     .then((items) => {
+//       if (items) {
+//         res.send({ items });
+//       } else {
+//         throw err;
+//       }
+//     })
+//     .catch((err) => {
+//       next(err);
+//     });
+// };
+const getItems = async (req, res, next) => {
+  try {
+    const items = await ClothingItem.find({});
+    res.send({ items });
+  } catch (err) {
+    next(err); // Pass the error to the next middleware
+  }
 };
 
 const deleteItem = (req, res, next) => {
@@ -57,13 +71,13 @@ const deleteItem = (req, res, next) => {
     .then((item) => {
       if (!item) {
         // return res.status(NOT_FOUND).send({ message: "Item not found" });
-        next(new NotFound());
+        return next(new NotFound("not found"));
       }
       if (!item.owner.equals(userId)) {
         // return res
         //   .status(FORBIDDEN)
         //   .send({ message: "Unauthorized to delete this item" });
-        next(new Forbidden());
+        return next(new Forbidden("forbidden"));
       }
       return item
         .deleteOne()
@@ -74,11 +88,10 @@ const deleteItem = (req, res, next) => {
         // return res
         //   .status(BAD_REQUEST)
         //   .send({ message: "Invalid request (deleteItem)" });
-        next(new BadRequest());
+        next(new BadRequest("bad request"));
       } else {
         next(err);
       }
-      return res.status(DEFAULT).send({ message: "Server error (deleteItem)" });
     });
 };
 
@@ -94,14 +107,13 @@ const likeItem = (req, res, next) => {
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError" || err.name === "CastError") {
-        next(new BadRequest());
+        next(new BadRequest("bad request"));
       }
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFound());
+        next(new NotFound("not found"));
       } else {
         next(err);
       }
-      return res.status(DEFAULT).send({ message: "Server error (likeItem)" });
     });
 };
 
@@ -120,19 +132,16 @@ const dislikeItem = (req, res, next) => {
         // return res
         //   .status(BAD_REQUEST)
         //   .send({ message: "Invalid request (dislikeItem)" });
-        next(new BadRequest());
+        next(new BadRequest("bad request"));
       }
       if (err.name === "DocumentNotFoundError") {
         // return res
         //   .status(NOT_FOUND)
         //   .send({ message: "Requested info is not found (dislikeItem)" });
-        next(new NotFound());
+        next(new NotFound("not found"));
       } else {
         next(err);
       }
-      return res
-        .status(DEFAULT)
-        .send({ message: "Server error (dislikeItem)" });
     });
 };
 

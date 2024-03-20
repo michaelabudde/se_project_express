@@ -10,7 +10,7 @@ const {
   // BAD_REQUEST,
   // NOT_FOUND,
   // UNAUTHORIZED,
-  DEFAULT,
+  // DEFAULT,
   // CONFLICT,
   CREATED,
   SUCCESS,
@@ -22,13 +22,13 @@ const createUser = async (req, res, next) => {
     const { name, avatar, email, password } = req.body;
     if (!email || !password) {
       // return res.status(BAD_REQUEST).send({ message: "bad request" });
-      next(new BadRequest());
+      next(new BadRequest("bad request"));
     }
     // Check if a user with the same email already exists
     const existingUser = await User.findOne({ email }).select("+password");
     if (existingUser) {
       // return res.status(CONFLICT).send({ message: "Email already exists" });
-      next(new Conflict());
+      next(new Conflict("email already exists"));
     }
     // Hash the password before saving to the database
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -55,10 +55,10 @@ const createUser = async (req, res, next) => {
       //   .send({ message: "Unable to create user." });
       next(new BadRequest("user could not be created"));
     } else {
-      next(err);
+      return next(err);
     }
   }
-  return res.status(DEFAULT).send({ message: "Server error (createUser)" });
+  return next();
 };
 
 const login = (req, res, next) => {
@@ -78,13 +78,13 @@ const login = (req, res, next) => {
         // return res
         //   .status(UNAUTHORIZED)
         //   .send({ message: "Incorrect email or password" });
-        next(new Unauthorized());
+        next(new Unauthorized("Incorrect email or password"));
       }
       // Authentication error
       // return res
       //   .status(BAD_REQUEST)
       //   .send({ message: "authentification error" });
-      next(new BadRequest());
+      next(err);
     });
 };
 
@@ -97,16 +97,14 @@ const getCurrentUser = async (req, res, next) => {
 
     if (!userId) {
       // return res.status(NOT_FOUND).send({ message: "User not found" });
-      next(new NotFound());
+      return next(new NotFound("user not found"));
     }
 
     // Return the user data
     return res.status(SUCCESS).send({ data: user });
   } catch (error) {
     console.error(error);
-    return res
-      .status(DEFAULT)
-      .send({ message: "Server error (getCurrentUser)" });
+    return next(error);
   }
 };
 
@@ -129,7 +127,7 @@ const updateUserProfile = async (req, res, next) => {
 
     if (!updateUser) {
       // return res.status(NOT_FOUND).send({ message: "User not found" });
-      next(new NotFound());
+      return next(new NotFound("user not found"));
     }
 
     // Return the updated user data
@@ -142,13 +140,11 @@ const updateUserProfile = async (req, res, next) => {
       // return res
       //   .status(BAD_REQUEST)
       //   .send({ message: "Validation error (updateUserProfile)" });
-      next(new BadRequest());
+      next(new BadRequest("bad request"));
     }
 
     // Handle server errors
-    return res
-      .status(DEFAULT)
-      .send({ message: "Server error (updateUserProfile)" });
+    return next(error);
   }
 };
 

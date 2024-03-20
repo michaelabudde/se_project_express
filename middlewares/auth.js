@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../utils/config");
-const { UNAUTHORIZED } = require("../utils/errors");
+// const { UNAUTHORIZED } = require("../utils/errors");
+const Unauthorized = require("../errors/unauthorized");
 
 const authMiddleware = (req, res, next) => {
   // Get the token from the Authorization header
@@ -8,7 +9,8 @@ const authMiddleware = (req, res, next) => {
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     // If the token is not provided or doesn't start with 'Bearer ', return a 401 error
-    return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
+    // return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
+    next(new Unauthorized("Incorrect email or password"));
   }
 
   // Extract the token from the Authorization header
@@ -19,7 +21,8 @@ const authMiddleware = (req, res, next) => {
 
   if (!payload) {
     // If there's an issue with the token (e.g., expired or invalid), return a 401 error
-    return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
+    // return res.status(UNAUTHORIZED).json({ message: "Unauthorized" });
+    next(new Unauthorized("Incorrect email or password"));
   }
 
   // Add the token payload to the user object
