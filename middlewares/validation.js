@@ -24,6 +24,7 @@ module.exports.validateCardBody = celebrate({
       "string.empty": 'The "imageUrl" field must be filled in',
       "string.uri": 'the "imageUrl" field must be a valid url',
     }),
+    weather: Joi.string().valid("hot", "warm", "cold"),
   }),
 });
 // 2. The user info body when a user is created
@@ -36,9 +37,9 @@ module.exports.validateUserInfo = celebrate({
       "string.empty": 'The "name" field must be filled in',
     }),
 
-    imageUrl: Joi.string().required().custom(validateURL).messages({
-      "string.empty": 'The "imageUrl" field must be filled in',
-      "string.uri": 'the "imageUrl" field must be a valid url',
+    avatar: Joi.string().required().custom(validateURL).messages({
+      "string.empty": 'The "avatar" field must be filled in',
+      "string.uri": 'the "avatar" field must be a valid url',
     }),
     email: Joi.string().required().email().messages({
       "string.base": "Email must be a string",
@@ -69,16 +70,19 @@ module.exports.validateLogIn = celebrate({
 
 // IDs must be a hexadecimal value length of 24 characters.
 module.exports.validateIds = celebrate({
+  // params: Joi.object().keys({
+  //   userID: Joi.string().hex().length(24).required().messages({
+  //     "string.hex": "User ID must be a hexadecimal value",
+  //     "string.length": "User ID must be 24 characters long",
+  //     "any.required": "User ID is required",
+  //   }),
+  //   itemID: Joi.string().hex().length(24).required().messages({
+  //     "string.hex": "Item ID must be a hexadecimal value",
+  //     "string.length": "Item ID must be 24 characters long",
+  //     "any.required": "Item ID is required",
+  //   }),
+  // }),
   params: Joi.object().keys({
-    userID: Joi.string().hex().length(24).required().messages({
-      "string.hex": "User ID must be a hexadecimal value",
-      "string.length": "User ID must be 24 characters long",
-      "any.required": "User ID is required",
-    }),
-    itemID: Joi.string().hex().length(24).required().messages({
-      "string.hex": "Item ID must be a hexadecimal value",
-      "string.length": "Item ID must be 24 characters long",
-      "any.required": "Item ID is required",
-    }),
+    itemId: Joi.string().hex().length(24).required(),
   }),
 });
