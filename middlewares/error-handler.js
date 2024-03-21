@@ -1,9 +1,3 @@
-// app.use((err, req, res, next) => {
-//   console.error(err);
-//   // return res.status(500).send({ message: "An error occurred on the server" });
-//   res.send({ message: err.message });
-// });
-
 module.exports = (err, req, res, next) => {
   console.error(err);
   // if an error has no status, set it to 500

@@ -18,7 +18,7 @@ router.use("/users", userRouter);
 //     message: "Requested resource not found",
 //   });
 // });
-router.use((next) => {
+router.use((req, res, next) => {
   next(new NotFound("not found"));
 });
 module.exports = router;

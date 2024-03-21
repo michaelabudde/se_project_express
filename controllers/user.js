@@ -111,14 +111,13 @@ const getCurrentUser = async (req, res, next) => {
 const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user._id;
-    const { name, avatar, email } = req.body;
+    const { name, avatar } = req.body;
     // Destructure only the name and avatar fields
 
     // Create an object with only the specified fields to update
     const updates = {};
     if (name) updates.name = name;
     if (avatar) updates.avatar = avatar;
-    if (email) updates.email = email; // added email to make update work
     // Update the user profile
     const updateUser = await User.findByIdAndUpdate(userId, updates, {
       new: true, // Return the updated document

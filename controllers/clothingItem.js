@@ -1,7 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
 const BadRequest = require("../errors/bad-request");
 const NotFound = require("../errors/not-found");
-const Forbidden = require("../errors/not-found");
+const Forbidden = require("../errors/forbidden");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
